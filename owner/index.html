@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#073e34">
+    <title>EV Charge Spot | Provider Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --deep: #073e34;
+            --green: #087a58;
+            --mint: #eaf5ee;
+            --ink: #172b25;
+            --muted: #718078;
+            --line: #e4ebe6;
+            --paper: #f7f9f7;
+            --white: #fff;
+            --red: #b74343;
+            --amber: #a66b12
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: "DM Sans", sans-serif
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit
+        }
+
+        button {
+            cursor: pointer
+        }
+
+        .wrap {
+            width: min(1160px, 92%);
+            margin: auto
+        }
+
+        header {
+            background: #fff;
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 10
+        }
+
+        .nav {
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: Manrope;
+            font-weight: 800;
+            color: var(--deep);
+            font-size: 19px;
+            text-decoration: none
+        }
+
+        .logo {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: var(--deep);
+            color: white;
+            display: grid;
+            place-items: center;
+            font-size: 20px
+        }
+
+        .navright {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .navright a {
+            color: #53645c;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 10px;
+            padding: 11px 16px;
+            background: var(--green);
+            color: #fff;
+            font-weight: 700
+        }
+
+        .btn:hover {
+            filter: brightness(.95)
+        }
+
+        .btn.outline {
+            background: #fff;
+            color: var(--deep);
+            border: 1px solid #cbd9d0
+        }
+
+        .btn.soft {
+            background: var(--mint);
+            color: var(--deep)
+        }
+
+        .btn.danger {
+            background: #fff0f0;
+            color: var(--red);
+            border: 1px solid #f0d1d1
+        }
+
+        .btn.small {
+            padding: 8px 11px;
+            font-size: 13px
+        }
+
+        .hero {
+            background: var(--deep);
+            color: #fff;
+            padding: 36px 0
+        }
+
+        .heroInner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px
+        }
+
+        .eyebrow {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            color: #a9d8bd;
+            font-weight: 800
+        }
+
+        .hero h1 {
+            font: 800 clamp(26px, 4vw, 38px) Manrope;
+            margin: 9px 0
+        }
+
+        .hero p {
+            color: #d2e4da;
+            max-width: 650px;
+            margin: 0;
+            line-height: 1.6
+        }
+
+        .heroBadge {
+            border: 1px solid #ffffff38;
+            background: #ffffff12;
+            padding: 13px 16px;
+            border-radius: 14px;
+            font-size: 13px;
+            max-width: 230px;
+            line-height: 1.5
+        }
+
+        main {
+            padding: 28px 0 60px
+        }
+
+        .sectionHead {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 15px;
+            margin: 28px 0 14px
+        }
+
+        .sectionHead h2 {
+            font: 800 21px Manrope;
+            margin: 0
+        }
+
+        .sectionHead p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 13px
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px
+        }
+
+        .stat,
+        .panel,
+        .listing,
+        .booking,
+        .review {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 15px
+        }
+
+        .stat {
+            padding: 18px
+        }
+
+        .stat .label {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 700
+        }
+
+        .stat strong {
+            display: block;
+            font: 800 27px Manrope;
+            margin: 7px 0 3px;
+            color: var(--deep)
+        }
+
+        .stat small {
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        .grid2 {
+            display: grid;
+            grid-template-columns: 1.1fr .9fr;
+            gap: 16px
+        }
+
+        .panel {
+            padding: 20px
+        }
+
+        .panel h3 {
+            font: 800 16px Manrope;
+            margin: 0 0 14px
+        }
+
+        .empty {
+            padding: 24px;
+            text-align: center;
+            color: var(--muted);
+            background: #f8faf8;
+            border: 1px dashed #d4dfd7;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.6
+        }
+
+        .bookingList,
+        .reviewList {
+            display: grid;
+            gap: 11px
+        }
+
+        .booking {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            align-items: center
+        }
+
+        .booking h4,
+        .listing h4 {
+            margin: 0 0 5px;
+            font-size: 14px
+        }
+
+        .meta {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.65
+        }
+
+        .actions {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap
+        }
+
+        .status {
+            display: inline-block;
+            border-radius: 99px;
+            padding: 5px 9px;
+            font-size: 11px;
+            font-weight: 800;
+            background: #fff4dc;
+            color: var(--amber)
+        }
+
+        .status.confirmed {
+            background: #e7f5ec;
+            color: #19734d
+        }
+
+        .status.rejected {
+            background: #fff0f0;
+            color: var(--red)
+        }
+
+        .status.completed {
+            background: #edf1f3;
+            color: #52616a
+        }
+
+        .listing {
+            padding: 18px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 15px
+        }
+
+        .listingDetails {
+            display: flex;
+            gap: 14px
+        }
+
+        .listingIcon {
+            width: 54px;
+            height: 54px;
+            border-radius: 13px;
+            background: var(--mint);
+            display: grid;
+            place-items: center;
+            font-size: 25px;
+            flex-shrink: 0
+        }
+
+        .tag {
+            display: inline-block;
+            border: 1px solid var(--line);
+            border-radius: 99px;
+            padding: 5px 9px;
+            margin: 6px 5px 0 0;
+            font-size: 11px;
+            color: #53645c
+        }
+
+        .field {
+            margin-bottom: 13px
+        }
+
+        .field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: #45564d
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #d8e1db;
+            border-radius: 9px;
+            background: #fff;
+            color: var(--ink);
+            outline: none
+        }
+
+        .field textarea {
+            min-height: 78px;
+            resize: vertical
+        }
+
+        .formGrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px
+        }
+
+        .checkline {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            font-size: 13px;
+            color: #53645c;
+            line-height: 1.5;
+            margin: 12px 0
+        }
+
+        .checkline input {
+            margin-top: 3px
+        }
+
+        .review {
+            padding: 14px
+        }
+
+        .stars {
+            color: #d59b28;
+            letter-spacing: 2px
+        }
+
+        .review p {
+            font-size: 13px;
+            color: #53645c;
+            line-height: 1.55;
+            margin: 8px 0 0
+        }
+
+        .notice {
+            background: #fff8e9;
+            border: 1px solid #f1dfb8;
+            color: #77571e;
+            border-radius: 11px;
+            padding: 12px 14px;
+            font-size: 12px;
+            line-height: 1.5;
+            margin-top: 14px
+        }
+
+        footer {
+            background: #fff;
+            border-top: 1px solid var(--line);
+            padding: 22px 0;
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        .modalBack {
+            position: fixed;
+            inset: 0;
+            background: #10231db0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            z-index: 30
+        }
+
+        .modalBack.show {
+            display: flex
+        }
+
+        .modal {
+            width: min(600px, 100%);
+            max-height: 90vh;
+            overflow: auto;
+            background: #fff;
+            border-radius: 17px;
+            padding: 22px
+        }
+
+        .modalTop {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px
+        }
+
+        .modalTop h3 {
+            margin: 0;
+            font: 800 19px Manrope
+        }
+
+        .x {
+            border: 0;
+            background: #edf3ee;
+            border-radius: 9px;
+            padding: 7px 11px
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #163d31;
+            color: white;
+            padding: 11px 16px;
+            border-radius: 10px;
+            display: none;
+            z-index: 50;
+            font-size: 13px
+        }
+
+        @media(max-width:800px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .grid2 {
+                grid-template-columns: 1fr
+            }
+
+            .heroInner {
+                align-items: flex-start;
+                flex-direction: column
+            }
+
+            .navright a {
+                display: none
+            }
+
+            .listing {
+                grid-template-columns: 1fr
+            }
+
+            .listing>.actions {
+                justify-content: flex-start
+            }
+        }
+
+        @media(max-width:520px) {
+            .nav {
+                height: 64px
+            }
+
+            .brand {
+                font-size: 16px
+            }
+
+            .logo {
+                width: 34px;
+                height: 34px
+            }
+
+            .stats {
+                gap: 9px
+            }
+
+            .stat {
+                padding: 14px
+            }
+
+            .stat strong {
+                font-size: 23px
+            }
+
+            .booking {
+                align-items: flex-start;
+                flex-direction: column
+            }
+
+            .formGrid {
+                grid-template-columns: 1fr
+            }
+
+            .hero {
+                padding: 29px 0
+            }
+
+            .sectionHead {
+                align-items: flex-start;
+                flex-direction: column
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="wrap nav"><a class="brand" href="#"><span class="logo">⚡</span> EV Charge Spot <span
+                    style="font-size:11px;color:#718078;font-weight:700">PROVIDER</span></a>
+            <div class="navright"><a href="#dashboard">Dashboard</a><a href="#bookings">Bookings</a><a
+                    href="#listing">My charging spot</a><button class="btn outline small" id="profileNavBtn"
+                    onclick="openProfile()">Create profile</button></div>
+        </div>
+    </header>
+    <section class="hero">
+        <div class="wrap heroInner">
+            <div>
+                <div class="eyebrow">Home charging provider</div>
+                <h1>Manage your charging spot.</h1>
+                <p>Share your existing home EV charger with nearby drivers. Manage requests, availability, pricing and
+                    your listing from one place.</p>
+            </div>
+            <div class="heroBadge">🏡 Only list a charger you already own and are ready to make available to EV drivers.
+            </div>
+        </div>
+    </section>
+    <main class="wrap" id="dashboard">
+        <div class="sectionHead">
+            <div>
+                <h2>Provider overview</h2>
+                <p>Your activity at a glance</p>
+            </div>
+            <div class="actions"><button class="btn outline" onclick="openProfile()">＋ Create / edit
+                    profile</button><button class="btn" onclick="openBookingForm()">＋ Add / edit charging spot</button>
+            </div>
+        </div>
+        <div class="panel" id="profileSummary" style="margin-bottom:16px"></div>
+        <div class="stats">
+            <div class="stat"><span class="label">Booking requests</span><strong
+                    id="statRequests">0</strong><small>Waiting for your response</small></div>
+            <div class="stat"><span class="label">Confirmed sessions</span><strong
+                    id="statConfirmed">0</strong><small>Upcoming bookings</small></div>
+            <div class="stat"><span class="label">Completed sessions</span><strong
+                    id="statCompleted">0</strong><small>Marked complete by you</small></div>
+            <div class="stat"><span class="label">Estimated earnings</span><strong
+                    id="statEarnings">₹0</strong><small>Based on completed demo sessions</small></div>
+        </div>
+        <div class="sectionHead" id="bookings">
+            <div>
+                <h2>Booking requests</h2>
+                <p>Review requests and accept or decline a time slot</p>
+            </div><button class="btn outline small" onclick="render()">Refresh</button>
+        </div>
+        <div class="panel">
+            <div id="bookingList" class="bookingList"></div>
+        </div>
+        <div class="grid2">
+            <section id="listing">
+                <div class="sectionHead">
+                    <div>
+                        <h2>My charging spot</h2>
+                        <p>Details customers can see before booking</p>
+                    </div>
+                </div>
+                <div class="panel" id="listingPanel"></div>
+            </section>
+            <section>
+                <div class="sectionHead">
+                    <div>
+                        <h2>Availability & pricing</h2>
+                        <p>Keep your schedule and rate up to date</p>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="field"><label>Price per kWh (₹)</label><input id="quickPrice" type="number" min="1"
+                            step="0.5" value="12"></div>
+                    <div class="field"><label>Available days</label><select id="quickDays">
+                            <option>Monday – Sunday</option>
+                            <option>Weekdays</option>
+                            <option>Weekends</option>
+                            <option>Custom schedule (describe in listing)</option>
+                        </select></div>
+                    <div class="field"><label>Daily available hours</label><input id="quickHours"
+                            value="9:00 AM – 8:00 PM"></div><button class="btn" onclick="saveAvailability()">Save
+                        availability</button>
+                    <div class="notice">Changes are saved in this browser demo. In the connected version, customers will
+                        see the updated schedule from the shared database.</div>
+                </div>
+            </section>
+        </div>
+        <div class="sectionHead">
+            <div>
+                <h2>Customer reviews</h2>
+                <p>Feedback displayed on your charging spot</p>
+            </div>
+        </div>
+        <div class="panel">
+            <div id="reviewList" class="reviewList"></div>
+        </div>
+    </main>
+    <footer>
+        <div class="wrap">EV Charge Spot · Provider dashboard · “Charge Nearby. Drive Anywhere.”</div>
+    </footer>
+    <div class="modalBack" id="modalBack" onclick="if(event.target===this)closeModal()">
+        <div class="modal">
+            <div class="modalTop">
+                <h3 id="modalTitle">Provider</h3><button class="x" onclick="closeModal()">✕</button>
+            </div>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+    <div class="toast" id="toast"></div>
+    <script>
+        const $ = id => document.getElementById(id), get = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d } catch { return d } }, put = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+        let provider = get('evcsProviderProfile', { name: '', email: '', phone: '', spotName: '', address: '', connector: 'Type 2', power: '7.4 kW', price: 12, hours: '9:00 AM – 8:00 PM', days: 'Monday – Sunday', facilities: 'Parking available', description: '', hasCharger: false });
+        function toast(s) { $('toast').textContent = s; $('toast').style.display = 'block'; setTimeout(() => $('toast').style.display = 'none', 2400) }
+        function closeModal() { $('modalBack').classList.remove('show') }
+        function modal(title, content) { $('modalTitle').textContent = title; $('modalContent').innerHTML = content; $('modalBack').classList.add('show') }
+        function openProfile() { modal(provider.name ? 'Edit provider profile' : 'Create provider profile', `<form onsubmit="saveProfile(event)"><p class="meta" style="margin:0 0 14px">Create your public provider profile so EV owners can know who is offering the home charging service. You can return here anytime to update these details.</p><div class="formGrid"><div class="field"><label>Full name</label><input id="pname" required maxlength="70" value="${esc(provider.name)}" placeholder="Your name"></div><div class="field"><label>Email address</label><input id="pemail" type="email" required value="${esc(provider.email)}" placeholder="you@example.com"></div></div><div class="field"><label>Password</label><input id="ppassword" type="password" minlength="6" required placeholder="Create a password"></div><div class="formGrid"><div class="field"><label>Phone number</label><input id="pphone" type="tel" required value="${esc(provider.phone)}" placeholder="Contact number"></div><div class="field"><label>Profile photo URL (optional)</label><input id="pphoto" type="url" value="${esc(provider.photo || '')}" placeholder="https://..."></div></div><div class="field"><label>About you / hosting notes</label><textarea id="pabout" maxlength="400" placeholder="A short introduction for EV owners">${esc(provider.about || '')}</textarea></div><label class="checkline"><input id="pconsent" type="checkbox" required checked> I confirm these details are accurate and I agree to share my contact details with customers who make a booking.</label><button class="btn" style="width:100%">${provider.name ? 'Update profile' : 'Create provider profile'}</button></form>`) }
+       
+async function saveProfile(e) {
+  e.preventDefault();
+
+  const form = e.currentTarget;
+
+const name = form.querySelector('#pname').value.trim();
+const email = form.querySelector('#pemail').value.trim();
+const password = form.querySelector('#ppassword').value;
+const phone = form.querySelector('#pphone').value.trim();
+const photo = form.querySelector('#pphoto').value.trim();
+const about = form.querySelector('#pabout').value.trim();
+
+  try {
+    const { createUserWithEmailAndPassword, doc, setDoc } =
+      window.firebaseFunctions;
+
+    let user = window.firebaseAuth.currentUser;
+
+    if (!user) {
+      const result = await createUserWithEmailAndPassword(
+        window.firebaseAuth,
+        email,
+        password
+      );
+      user = result.user;
+    }
+
+    provider = {
+      ...provider,
+      uid: user.uid,
+      name,
+      email: user.email,
+      phone,
+      photo,
+      about,
+      role: "provider",
+      profileComplete: true
+    };
+    console.log("Saving users document:", user.uid);
+    await setDoc(doc(window.firebaseDb, "users", user.uid), {
+      uid: user.uid,
+      name,
+      email: user.email,
+      role: "provider"
+    });
+
+    console.log("Saving providers document:", user.uid);
+    await setDoc(doc(window.firebaseDb, "providers", user.uid), provider);
+
+    put('evcsProviderProfile', provider);
+    closeModal();
+    toast(name + ' profile saved successfully!');
+    render();
+
+  } catch (error) {
+    console.error(error);
+    toast(error.message);
+  }
+}
+
+        function openBookingForm() {
+            modal('Add your home charging spot', `<form onsubmit="saveSpot(event)">
+<div class="notice" style="margin:0 0 14px">This platform is for homes, hotels, restaurants, cafés and other places that already have an EV charger installed. Do not list a charger you do not own or control.</div>
+<label class="checkline"><input id="hasCharger" type="checkbox" ${provider.hasCharger ? 'checked' : ''} required> I confirm that I already have a working EV charging unit at my property or business and have permission to offer charging to visitors.</label>
+<div class="field"><label>Place type</label><select id="placeType"><option>Home</option><option>Hotel</option><option>Restaurant</option><option>Café</option><option>Mall / shop</option><option>Petrol station</option><option>Office / other</option></select></div>
+<div class="field"><label>Charging spot / business name</label><input id="spotName" required value="${esc(provider.spotName)}" placeholder="e.g. Green Villa Charging"></div>
+<div class="field"><label>Full address</label><textarea id="address" required placeholder="House / street, area, city, PIN code">${esc(provider.address)}</textarea></div>
+<div class="formGrid"><div class="field"><label>Connector type</label><select id="connector"><option>Type 2</option><option>CCS2</option><option>Bharat AC-001</option><option>7-pin / 15A socket</option><option>Other (specify in description)</option></select></div><div class="field"><label>Charger power</label><input id="power" required value="${esc(provider.power)}" placeholder="e.g. 7.4 kW"></div></div>
+<div class="formGrid"><div class="field"><label>Price per kWh (₹)</label><input id="price" type="number" min="1" step=".5" required value="${provider.price}"></div><div class="field"><label>Available hours</label><input id="hours" required value="${esc(provider.hours)}"></div></div>
+<div class="field"><label>Available days</label><select id="days"><option>Monday – Sunday</option><option>Weekdays</option><option>Weekends</option><option>Custom schedule</option></select></div>
+<div class="field"><label>Facilities</label><input id="facilities" value="${esc(provider.facilities)}" placeholder="Parking, restroom, CCTV, etc."></div>
+<div class="field"><label>About your charging setup</label><textarea id="description" placeholder="Access instructions, vehicle compatibility, safety notes...">${esc(provider.description)}</textarea></div>
+<button class="btn" style="width:100%">Save charging spot</button></form>`); $('connector').value = provider.connector; $('days').value = provider.days; $('placeType').value = provider.placeType || 'Home'
+        }
+                
+        async function saveSpot(e) {
+        e.preventDefault();
+
+        const user = window.firebaseAuth.currentUser;
+
+        if (!user) {
+            toast("Please sign in first.");
+            return;
+        }
+
+        provider = {
+            ...provider,
+            uid: user.uid,
+            hasCharger: $("hasCharger").checked,
+            placeType: $("placeType").value,
+            spotName: $("spotName").value.trim(),
+            address: $("address").value.trim(),
+            connector: $("connector").value,
+            power: $("power").value.trim(),
+            price: Number($("price").value),
+            hours: $("hours").value.trim(),
+            days: $("days").value,
+            facilities: $("facilities").value.trim(),
+            description: $("description").value.trim()
+        };
+
+        try {
+            const { doc, setDoc } = window.firebaseFunctions;
+
+            await setDoc(
+            doc(window.firebaseDb, "providers", user.uid),
+            provider,
+            { merge: true }
+            );
+
+            put("evcsProviderProfile", provider);
+            closeModal();
+            toast("Charging spot saved successfully!");
+            render();
+
+        } catch (error) {
+            console.error("Charging spot save error:", error);
+            toast(error.message);
+        }
+        }
+
+        function saveAvailability() { provider.price = Number($('quickPrice').value) || provider.price; provider.days = $('quickDays').value; provider.hours = $('quickHours').value.trim(); put('evcsProviderProfile', provider); toast('Availability and price saved.'); render() }
+        function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])) }
+        let liveBookings = [];
+window.setLiveBookings = rows => { liveBookings = rows; renderBookings() };
+function getBookings() { return liveBookings }
+
+function renderBookings() {
+    const list = getBookings();
+    const count = st => list.filter(b => b.status === st).length;
+    $('statRequests').textContent = count('Pending');
+    $('statConfirmed').textContent = count('Confirmed');
+    $('statCompleted').textContent = count('Completed');
+    $('statEarnings').textContent = '₹' + list.filter(b => b.status === 'Completed').reduce((sum, b) => sum + (Number(b.total) || (Number(b.kwh) || 0) * Number(provider.price || 0)), 0).toFixed(0);
+
+    $('bookingList').innerHTML = list.length ? list.map(b => `<article class="booking"><div><h4>${esc(b.spotName || b.spot || 'Charging request')}</h4><div class="meta">📅 ${esc(b.date || 'Date not set')} · ⏰ ${esc(b.time || 'Time not set')}<br>🚘 ${esc(b.vehicle || 'EV')} · ${esc(b.model || 'Model not provided')} · ${esc(b.kwh || '—')} kWh<br>Customer: ${esc(b.customerName || b.customerEmail || b.customer || 'Customer')}</div><span class="status ${String(b.status).toLowerCase()}">${esc(b.status || 'Pending')}</span></div><div class="actions">${b.status === 'Pending' ? `<button class="btn small" onclick="updateBooking('${esc(b.id)}','Confirmed')">Accept</button><button class="btn danger small" onclick="updateBooking('${esc(b.id)}','Rejected')">Decline</button>` : ''}${b.status === 'Confirmed' ? `<button class="btn soft small" onclick="updateBooking('${esc(b.id)}','Completed')">Mark completed</button>` : ''}</div></article>`).join('') : '<div class="empty">No booking requests yet.<br>When a customer requests one of your charging slots, it will appear here.</div>'
+}
+
+async function updateBooking(id, status) {
+    try {
+        const f = window.firebaseFunctions;
+        await f.updateDoc(f.doc(window.firebaseDb, 'bookings', id), { status });
+        toast('Booking marked ' + status.toLowerCase() + '.');
+    } catch (error) {
+        console.error('Booking update error:', error);
+        toast(error.message || 'Could not update booking.');
+    }
+}
+        function renderListing() { if (!provider.spotName) { $('listingPanel').innerHTML = '<div class="empty">You have not added a charging spot yet.<br><br><button class="btn" onclick="openBookingForm()">Add my charging spot</button></div>'; return } $('listingPanel').innerHTML = `<div class="listing"><div class="listingDetails"><div class="listingIcon">⚡</div><div><h4>${esc(provider.spotName)}</h4><div class="meta">${esc(provider.address)}<br>${esc(provider.hours)} · ${esc(provider.days)}<br>₹${provider.price} / kWh</div><span class="tag">${esc(provider.placeType || 'Home')}</span><span class="tag">${esc(provider.connector)}</span><span class="tag">${esc(provider.power)}</span><span class="tag">${esc(provider.facilities || 'Home charger')}</span></div></div><div class="actions"><button class="btn outline small" onclick="openBookingForm()">Edit details</button></div></div>` }
+        function renderReviews() { let reviews = get('evcsReviews', []); let mine = reviews.filter(r => !provider.spotName || r.spot === provider.spotName); $('reviewList').innerHTML = mine.length ? mine.map(r => `<article class="review"><div style="display:flex;justify-content:space-between;gap:10px"><b>${esc(r.title || 'Customer feedback')}</b><span class="stars">${'★'.repeat(Number(r.rating) || 0)}${'☆'.repeat(5 - (Number(r.rating) || 0))}</span></div><p>${esc(r.text || r.review || '')}</p><div class="meta" style="margin-top:8px">${esc(r.name || r.customer || 'EV owner')} · ${esc(r.date || 'Customer review')}</div></article>`).join('') : '<div class="empty">No reviews for your charging spot yet. Customer feedback will appear here after reviews are submitted.</div>' }
+        function render() { let complete = !!(provider.profileComplete && provider.name && provider.email && provider.phone); $('profileNavBtn').textContent = complete ? 'Edit profile' : 'Create profile'; $('profileSummary').innerHTML = complete ? `<div style="display:flex;align-items:center;gap:13px"><div class="listingIcon">${provider.photo ? `<img src="${esc(provider.photo)}" alt="Provider profile" style="width:54px;height:54px;object-fit:cover;border-radius:13px">` : '👤'}</div><div style="flex:1"><b>${esc(provider.name)}</b><div class="meta">${esc(provider.email)} · ${esc(provider.phone)}</div>${provider.about ? `<div class="meta" style="margin-top:4px">${esc(provider.about)}</div>` : ''}<span class="status confirmed" style="margin-top:7px">Profile created</span></div><button class="btn outline small" onclick="openProfile()">Edit details</button></div>` : `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><b>Set up your provider profile</b><div class="meta">Add your name, email and phone number. You can update your details whenever they change.</div></div><button class="btn" onclick="openProfile()">Create profile</button></div>`; if ($('quickPrice')) $('quickPrice').value = provider.price || 12; if ($('quickDays')) $('quickDays').value = provider.days || 'Monday – Sunday'; if ($('quickHours')) $('quickHours').value = provider.hours || '9:00 AM – 8:00 PM'; renderBookings(); renderListing(); renderReviews() }
+        render();
+    </script>
+    <script type="module">
+    import { auth, db } from "../js/firebase.js";
+    import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+    window.firebaseAuth = auth;
+    window.firebaseDb = db;
+    window.firebaseFunctions = { ...(window.firebaseFunctions || {}), createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot };
+
+    console.log("Owner connected to Firebase!");
+
+    // ---------- Login screen ----------
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(10,40,30,.92);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px';
+    overlay.innerHTML = `
+        <form id="loginForm" style="background:#fff;border-radius:18px;padding:28px;width:100%;max-width:380px;display:grid;gap:12px">
+            <h2 style="margin:0">Provider login</h2>
+            <input id="loginEmail" type="email" required placeholder="Email" style="padding:12px;border:1px solid #ccc;border-radius:10px">
+            <input id="loginPassword" type="password" required placeholder="Password" style="padding:12px;border:1px solid #ccc;border-radius:10px">
+            <div id="loginError" style="color:#b42318;font-size:14px;min-height:18px"></div>
+            <button class="btn" type="submit">Log in</button>
+            <button class="btn outline" type="button" id="loginCreate">New provider? Create profile</button>
+        </form>`;
+    document.body.appendChild(overlay);
+
+    const loginError = document.getElementById('loginError');
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        loginError.textContent = '';
+        try {
+            await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value.trim(), document.getElementById('loginPassword').value);
+        } catch (err) {
+            console.error(err);
+            loginError.textContent = (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found')
+                ? 'Incorrect email or password.' : (err.message || 'Login failed.');
+        }
+    });
+
+    document.getElementById('loginCreate').addEventListener('click', () => {
+        overlay.style.display = 'none';
+        openProfile();
+    });
+
+    // ---------- Logout button ----------
+    const navBtn = document.getElementById('profileNavBtn');
+    const logoutBtn = document.createElement('button');
+    logoutBtn.className = 'btn outline small';
+    logoutBtn.textContent = 'Log out';
+    logoutBtn.style.display = 'none';
+    logoutBtn.onclick = () => signOut(auth);
+    if (navBtn) navBtn.after(logoutBtn);
+
+    // ---------- Auth state + live bookings ----------
+    const DEFAULT_PROVIDER = { name: '', email: '', phone: '', spotName: '', address: '', connector: 'Type 2', power: '7.4 kW', price: 12, hours: '9:00 AM – 8:00 PM', days: 'Monday – Sunday', facilities: 'Parking available', description: '', hasCharger: false };
+    let unsubscribe = null;
+
+    onAuthStateChanged(auth, async (user) => {
+        if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+
+        if (!user) {
+            logoutBtn.style.display = 'none';
+            window.setLiveBookings([]);
+            overlay.style.display = 'flex';
+            return;
+        }
+
+        try {
+            // Customers can't use the provider dashboard
+            const u = await getDoc(doc(db, 'users', user.uid));
+            if (u.exists() && u.data().role !== 'provider') {
+                await signOut(auth);
+                loginError.textContent = 'This account is not a provider account.';
+                return;
+            }
+
+            // Load this provider's own profile
+            const p = await getDoc(doc(db, 'providers', user.uid));
+            provider = p.exists() ? { ...DEFAULT_PROVIDER, ...p.data() } : { ...DEFAULT_PROVIDER };
+            put('evcsProviderProfile', provider);
+            render();
+        } catch (err) {
+            console.error('Profile load error:', err);
+        }
+
+        overlay.style.display = 'none';
+        logoutBtn.style.display = '';
+
+        const q = query(collection(db, 'bookings'), where('providerId', '==', user.uid));
+        unsubscribe = onSnapshot(q, (snap) => {
+            const rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            rows.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+            window.setLiveBookings(rows);
+        }, (error) => {
+            console.error('Could not load booking requests:', error);
+            toast('Could not load booking requests. Check Firestore rules.');
+        });
+    });
+</script>
+<script type="module">
+    import { startNotifications } from "../js/notifications.js";
+    startNotifications('provider');
+</script>
+</body>
+
+</html>
