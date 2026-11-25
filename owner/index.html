@@ -701,19 +701,32 @@ const photo = form.querySelector('#pphoto').value.trim();
 const about = form.querySelector('#pabout').value.trim();
 
   try {
-    const { createUserWithEmailAndPassword, doc, setDoc } =
-      window.firebaseFunctions;
+    const { createUserWithEmailAndPassword, signInWithEmailAndPassword, doc, setDoc } =
+  window.firebaseFunctions;
 
     let user = window.firebaseAuth.currentUser;
 
     if (!user) {
-      const result = await createUserWithEmailAndPassword(
+  try {
+    const result = await createUserWithEmailAndPassword(
+      window.firebaseAuth,
+      email,
+      password
+    );
+    user = result.user;
+  } catch (err) {
+    if (err.code === "auth/email-already-in-use") {
+      const result = await signInWithEmailAndPassword(
         window.firebaseAuth,
         email,
         password
       );
       user = result.user;
+    } else {
+      throw err;
     }
+  }
+}
 
     provider = {
       ...provider,
@@ -892,7 +905,66 @@ async function updateBooking(id, status) {
     logoutBtn.textContent = 'Log out';
     logoutBtn.style.display = 'none';
     logoutBtn.onclick = () => signOut(auth);
-    if (navBtn) navBtn.after(logoutBtn);
+    // ---------- Delete account button ----------
+const deleteBtn = document.createElement('button');
+deleteBtn.className = 'btn outline small';
+deleteBtn.textContent = 'Delete account';
+deleteBtn.style.cssText = 'display:none;color:#b74343;border-color:#b74343;';
+deleteBtn.onclick = deleteOwnerAccount;
+const switchBtn = document.createElement('button');
+switchBtn.className = 'btn outline small';
+switchBtn.textContent = 'Use another email';
+switchBtn.style.display = 'none';
+switchBtn.onclick = async () => {
+    if (confirm('Log out and create a profile with a different email?')) {
+        await signOut(auth);
+    }
+};
+if (navBtn) {
+    navBtn.after(logoutBtn);
+    logoutBtn.after(switchBtn);
+    switchBtn.after(deleteBtn);
+}
+// show/hide the extra buttons together with Log out
+new MutationObserver(() => {
+    deleteBtn.style.display = logoutBtn.style.display;
+    switchBtn.style.display = logoutBtn.style.display;
+}).observe(logoutBtn, { attributes: true, attributeFilter: ['style'] });
+
+async function deleteOwnerAccount() {
+    const {
+        deleteUser, EmailAuthProvider, reauthenticateWithCredential,
+        doc, deleteDoc, collection, query, where, getDocs
+    } = window.firebaseFunctions;
+    const db = window.firebaseDb;
+    const user = auth.currentUser;
+
+    if (!user) { alert('Please log in first.'); return; }
+    if (!confirm('Delete your provider account and all your charging spots? This cannot be undone.')) return;
+
+    const password = prompt('Enter your password to confirm:');
+    if (!password) return;
+
+    try {
+        const cred = EmailAuthProvider.credential(user.email, password);
+        await reauthenticateWithCredential(user, cred);
+
+        const spots = await getDocs(
+            query(collection(db, 'chargingSpots'), where('ownerId', '==', user.uid))
+        );
+        await Promise.all(spots.docs.map(d => deleteDoc(d.ref)));
+
+        await deleteDoc(doc(db, 'providers', user.uid));
+        await deleteDoc(doc(db, 'users', user.uid));
+        await deleteUser(user);
+
+        alert('Your account has been deleted.');
+        window.location.href = '../index.html';
+    } catch (err) {
+        console.error(err);
+        alert('Could not delete account: ' + (err.code || err.message));
+    }
+}
 
     // ---------- Auth state + live bookings ----------
     const DEFAULT_PROVIDER = { name: '', email: '', phone: '', spotName: '', address: '', connector: 'Type 2', power: '7.4 kW', price: 12, hours: '9:00 AM – 8:00 PM', days: 'Monday – Sunday', facilities: 'Parking available', description: '', hasCharger: false };
