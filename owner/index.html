@@ -715,17 +715,22 @@ const about = form.querySelector('#pabout').value.trim();
     );
     user = result.user;
   } catch (err) {
-    if (err.code === "auth/email-already-in-use") {
-      const result = await signInWithEmailAndPassword(
-        window.firebaseAuth,
-        email,
-        password
-      );
+  if (err.code === "auth/email-already-in-use") {
+    try {
+      const result = await signInWithEmailAndPassword(window.firebaseAuth, email, password);
       user = result.user;
-    } else {
-      throw err;
+    } catch (signInErr) {
+      if (signInErr.code === "auth/too-many-requests") {
+        throw new Error("Too many attempts. Please wait a few minutes and try again.");
+      }
+      throw new Error("This email is already registered, for example as a customer account. Use the same password as that account, or use a different email.");
     }
+  } else if (err.code === "auth/weak-password") {
+    throw new Error("Password must be at least 6 characters.");
+  } else {
+    throw err;
   }
+}
 }
 
     provider = {
