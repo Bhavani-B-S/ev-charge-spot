@@ -450,7 +450,13 @@ window.logoutCustomer = async function () {
 
   // Load provider charging spots from the shared Firestore database.
   // The provider page saves these documents in the "providers" collection.
-  const fallbackImage = spots[0]?.img || "";
+  const fallbackImage = "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#073e34"/><stop offset="1" stop-color="#087a58"/></linearGradient></defs>
+<rect width="800" height="500" fill="url(#g)"/>
+<circle cx="400" cy="230" r="110" fill="#ffffff" fill-opacity="0.12"/>
+<path d="M430 120 L340 270 H400 L370 380 L470 220 H408 Z" fill="#f5b400"/>
+<text x="400" y="440" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#eaf5ee">Home charging spot</text>
+</svg>`);
   onSnapshot(collection(db, "providers"), (snapshot) => {
     const liveSpots = snapshot.docs
       .map((providerDoc) => {
@@ -543,4 +549,5 @@ window.logoutCustomer = async function () {
     import { startPublicStations } from "../js/publicStations.js";
     startPublicStations();
 </script>
+<script type="module" src="../js/chat.js"></script>
 </body></html>
