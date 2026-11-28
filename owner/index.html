@@ -667,6 +667,16 @@
         <div class="panel">
             <div id="reviewList" class="reviewList"></div>
         </div>
+        <section id="allSpots">
+    <div class="sectionHead">
+        <div>
+            <h2>Browse EV charge spots</h2>
+            <p>See the home charging spots listed on EV Charge Spot</p>
+        </div>
+        <button class="btn outline small" id="refreshSpotsBtn" type="button">Refresh</button>
+    </div>
+    <div class="panel"><div id="allSpotsList">Loading…</div></div>
+</section>
     </main>
     <footer>
         <div class="wrap">EV Charge Spot · Provider dashboard · “Charge Nearby. Drive Anywhere.”</div>
@@ -745,12 +755,17 @@ const about = form.querySelector('#pabout').value.trim();
       profileComplete: true
     };
     console.log("Saving users document:", user.uid);
-    await setDoc(doc(window.firebaseDb, "users", user.uid), {
-      uid: user.uid,
-      name,
-      email: user.email,
-      role: "provider"
-    });
+    const usersRef = doc(window.firebaseDb, "users", user.uid);
+const existingUser = await window.firebaseFunctions.getDoc(usersRef);
+const existingData = existingUser.exists() ? existingUser.data() : {};
+
+await setDoc(usersRef, {
+  uid: user.uid,
+  name: existingData.name || name,
+  email: user.email,
+  role: existingData.role || "provider",
+  isProvider: true
+}, { merge: true });
 
     console.log("Saving providers document:", user.uid);
     await setDoc(doc(window.firebaseDb, "providers", user.uid), provider);
@@ -970,7 +985,42 @@ async function deleteOwnerAccount() {
         alert('Could not delete account: ' + (err.code || err.message));
     }
 }
+// ---------- Browse all charge spots (read-only) ----------
+function escHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+}
 
+async function loadAllSpots() {
+    const box = document.getElementById('allSpotsList');
+    if (!box) return;
+    box.textContent = 'Loading charge spots…';
+    try {
+        const { collection, getDocs } = window.firebaseFunctions;
+        const snap = await getDocs(collection(window.firebaseDb, 'providers'));
+        const me = auth.currentUser ? auth.currentUser.uid : null;
+        const spots = snap.docs
+            .map(d => ({ id: d.id, ...d.data() }))
+            .filter(p => p.role === 'provider' && p.profileComplete === true && p.hasCharger === true);
+
+        if (!spots.length) {
+            box.textContent = 'No charging spots have been listed yet.';
+            return;
+        }
+        box.innerHTML = spots.map(p => `
+            <div style="padding:14px 0;border-bottom:1px solid #e4ebe6;">
+                <strong>${escHtml(p.spotName)}</strong>${p.id === me ? ' <small>(your spot)</small>' : ''}<br>
+                <small>📍 ${escHtml(p.address || p.area || 'Address not set')} · 🔌 ${escHtml(p.connector || 'Not specified')} · ⚡ ${escHtml(p.power || 'Power not specified')} · ₹${escHtml(p.price || 0)}/kWh</small>
+            </div>`).join('');
+    } catch (e) {
+        console.error(e);
+        box.textContent = 'Could not load charge spots.';
+    }
+}
+
+document.getElementById('refreshSpotsBtn')?.addEventListener('click', loadAllSpots);
+onAuthStateChanged(auth, user => { if (user) loadAllSpots(); });
     // ---------- Auth state + live bookings ----------
     const DEFAULT_PROVIDER = { name: '', email: '', phone: '', spotName: '', address: '', connector: 'Type 2', power: '7.4 kW', price: 12, hours: '9:00 AM – 8:00 PM', days: 'Monday – Sunday', facilities: 'Parking available', description: '', hasCharger: false };
     let unsubscribe = null;
@@ -988,7 +1038,7 @@ async function deleteOwnerAccount() {
         try {
             // Customers can't use the provider dashboard
             const u = await getDoc(doc(db, 'users', user.uid));
-            if (u.exists() && u.data().role !== 'provider') {
+            if (u.exists() && u.data().role !== 'provider' && u.data().isProvider !== true) {
                 await signOut(auth);
                 loginError.textContent = 'This account is not a provider account.';
                 return;
