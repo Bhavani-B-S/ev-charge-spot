@@ -354,7 +354,7 @@ async function handleAuth(e,mode){
     const profileSnap=await f.getDoc(profileRef);
     let profile=profileSnap.exists()?profileSnap.data():null;
 
-    if(mode==='login' && profile && profile.role && profile.role!=='customer'){
+    if(mode==='login' && profile && profile.role && profile.role!=='customer' && profile.role!=='provider' && profile.isProvider!==true){
       await auth.signOut();
       toast('This account is not a customer account. Please use the correct login.');
       if(submit){submit.disabled=false;submit.textContent='Log in';}
